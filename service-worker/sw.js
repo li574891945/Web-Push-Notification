@@ -1,10 +1,13 @@
 self.addEventListener("push", function (event) {
+  console.log(event.data.text())
   console.log("Received a push message", event);
-  const title = "Push Notification Demo";
+  console.log(new Date().getTime())
+
+  const data = JSON.stringify(event.data.json())
+  const title = data.title;
   const options = {
-    body: event.data.text(),
-    icon: "./assets/alarm.png",
-    badge: "images/badge.png",
+    body: data.body,
+    icon: data.icon,
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
@@ -13,5 +16,5 @@ self.addEventListener("push", function (event) {
 self.addEventListener("notificationclick", function (event) {
   console.log("Notification clicked", event);
   event.notification.close();
-  event.waitUntil(clients.openWindow("https://www.tayloramitverma.com"));
+  // event.waitUntil(clients.openWindow("https://www.tayloramitverma.com"));
 });
