@@ -1,76 +1,93 @@
 let subscribeButton = document.getElementById("subscribe");
 let unsubscribeButton = document.getElementById("unsubscribe");
 
+console.log(new Date().getTime())
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker
-    .register("./sw.js",{
+      .register("./sw.js",{
         scope: ".", // <--- THIS BIT IS REQUIRED
-    })
-    .then(async function (registration) {
-      console.log("Service Worker registered successfully:", registration);
+      })
+      .then(async function (registration) {
+        console.log("Service Worker registered successfully:", registration);
 
-      subscribeButton.addEventListener("click", function () {
-        subscribeToPushNotifications(registration);
-      });
+        subscribeButton.addEventListener("click", function () {
+          subscribeToPushNotifications(registration);
+        });
 
-      unsubscribeButton.addEventListener("click", function () {
-        unsubscribeFromPushNotifications(registration);
+        unsubscribeButton.addEventListener("click", function () {
+          unsubscribeFromPushNotifications(registration);
+        });
+      })
+      .catch(function (error) {
+        console.log("Service Worker registration failed:", error);
       });
-    })
-    .catch(function (error) {
-      console.log("Service Worker registration failed:", error);
-    });
 }
 
 function subscribeToPushNotifications(registration) {
   registration.pushManager
-    .subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(
-        "BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU"
-      ),
-    })
-    .then(function (subscription) {
-      console.log("Subscribed to push notifications:", subscription);
-      updateSubscriptionOnServer(subscription);
-      subscribeButton.disabled = true;
-      unsubscribeButton.disabled = false;
-    })
-    .catch(function (error) {
-      console.log("Failed to subscribe to push notifications:", error);
-      subscribeButton.disabled = false;
-      unsubscribeButton.disabled = true;
-    });
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+            "BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU"
+        ),
+      })
+      .then(function (subscription) {
+        console.log("Subscribed to push notifications:", subscription);
+        updateSubscriptionOnServer(subscription);
+        // updateSubscriptionOnServerToMike(subscription)
+        subscribeButton.disabled = true;
+        unsubscribeButton.disabled = false;
+      })
+      .catch(function (error) {
+        console.log("Failed to subscribe to push notifications:", error);
+        subscribeButton.disabled = false;
+        unsubscribeButton.disabled = true;
+      });
 }
 
 function unsubscribeFromPushNotifications(registration) {
   registration.pushManager.getSubscription().then(function (subscription) {
     if (subscription) {
       subscription
-        .unsubscribe()
-        .then(function () {
-          console.log("Unsubscribed from push notifications:", subscription);
-          updateSubscriptionOnServer(null);
-          subscribeButton.disabled = false;
-          unsubscribeButton.disabled = true;
-        })
-        .catch(function (error) {
-          console.log("Failed to unsubscribe from push notifications:", error);
-          subscribeButton.disabled = true;
-          unsubscribeButton.disabled = false;
-        });
+          .unsubscribe()
+          .then(function () {
+            console.log("Unsubscribed from push notifications:", subscription);
+            updateSubscriptionOnServer(null);
+            // updateSubscriptionOnServerToMike(null)
+            subscribeButton.disabled = false;
+            unsubscribeButton.disabled = true;
+          })
+          .catch(function (error) {
+            console.log("Failed to unsubscribe from push notifications:", error);
+            subscribeButton.disabled = true;
+            unsubscribeButton.disabled = false;
+          });
     }
   });
 }
 
 async function updateSubscriptionOnServer(subscription) {
   // TODO: Send subscription to server for storage and use
-
-  const SERVER_URL = "https://127.0.0.1:4000/save-subscription";
+  console.log(subscription)
+  const SERVER_URL = "https://jim-api.123998.me/jimapi/save-subscription";
   const response = await fetch(SERVER_URL, {
     method: "post",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(subscription)
+  });
+  return response.json();
+}
+
+async function updateSubscriptionOnServerToMike(subscription) {
+  // TODO: Send subscription to server for storage and use
+
+  const SERVER_URL = "https://lark.semfoundry.com/api/LarkInform/save_subscription";
+  const response = await fetch(SERVER_URL, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(subscription),
   });

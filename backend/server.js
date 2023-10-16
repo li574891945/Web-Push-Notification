@@ -1,125 +1,106 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const webpush = require("web-push");
+let subscribeButton = document.getElementById("subscribe");
+let unsubscribeButton = document.getElementById("unsubscribe");
 
-// const https = require('https');
-// const fs = require('fs');
-// let options = {
-//   key: fs.readFileSync('./keys/server-key.pem'),
-//   ca: [fs.readFileSync('./keys/ca-cert.pem')],
-//   cert: fs.readFileSync('./keys/server-cert.pem')
-// };
+console.log(new Date().getTime())
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+      .register("./sw.js",{
+        scope: ".", // <--- THIS BIT IS REQUIRED
+      })
+      .then(async function (registration) {
+        console.log("Service Worker registered successfully:", registration);
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-const port = 4000;
+        subscribeButton.addEventListener("click", function () {
+          subscribeToPushNotifications(registration);
+        });
 
-app.get("/api/", (req, res) => res.send("Hello World!"));
+        unsubscribeButton.addEventListener("click", function () {
+          unsubscribeFromPushNotifications(registration);
+        });
+      })
+      .catch(function (error) {
+        console.log("Service Worker registration failed:", error);
+      });
+}
 
-const dummyDb = { subscription: null };
+function subscribeToPushNotifications(registration) {
+  registration.pushManager
+      .subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(
+            "BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU"
+        ),
+      })
+      .then(function (subscription) {
+        console.log("Subscribed to push notifications:", subscription);
+        updateSubscriptionOnServer(subscription);
+        // updateSubscriptionOnServerToMike(subscription)
+        subscribeButton.disabled = true;
+        unsubscribeButton.disabled = false;
+      })
+      .catch(function (error) {
+        console.log("Failed to subscribe to push notifications:", error);
+        subscribeButton.disabled = false;
+        unsubscribeButton.disabled = true;
+      });
+}
 
-const saveToDatabase = async (subscription) => {
-  dummyDb.subscription = subscription;
-};
+function unsubscribeFromPushNotifications(registration) {
+  registration.pushManager.getSubscription().then(function (subscription) {
+    if (subscription) {
+      subscription
+          .unsubscribe()
+          .then(function () {
+            console.log("Unsubscribed from push notifications:", subscription);
+            updateSubscriptionOnServer(null);
+            // updateSubscriptionOnServerToMike(null)
+            subscribeButton.disabled = false;
+            unsubscribeButton.disabled = true;
+          })
+          .catch(function (error) {
+            console.log("Failed to unsubscribe from push notifications:", error);
+            subscribeButton.disabled = true;
+            unsubscribeButton.disabled = false;
+          });
+    }
+  });
+}
 
-// The new /save-subscription endpoint
-app.post("/api/save-subscription", async (req, res) => {
-  const subscription = req.body;
-  if(subscription === '' || subscription === null || typeof subscription === 'undefined' ){
-    res.json({ message: "用户未授权" });
-  } else {
-    console.log("subscription", subscription);
+async function updateSubscriptionOnServer(subscription) {
+  // TODO: Send subscription to server for storage and use
+  console.log(subscription)
+  const SERVER_URL = "https://jim-api.123998.me/jimapi/save-subscription";
+  const response = await fetch(SERVER_URL, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(subscription)
+  });
+  return response.json();
+}
 
-    await saveToDatabase(subscription);
-    res.json({ message: "success" });
+async function updateSubscriptionOnServerToMike(subscription) {
+  // TODO: Send subscription to server for storage and use
+
+  const SERVER_URL = "https://lark.semfoundry.com/api/LarkInform/save_subscription";
+  const response = await fetch(SERVER_URL, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(subscription),
+  });
+  return response.json();
+}
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
   }
-});
-
-const vapidKeys = {
-  publicKey:
-      "BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU",
-  privateKey: "RuAZd__egeVcAFmVVhbNsQnKqfMgZffTODV0QyyH8nM",
-};
-
-//setting our previously generated VAPID keys
-webpush.setVapidDetails(
-    "mailto:lijianjunlovelin@gmail.com",
-    vapidKeys.publicKey,
-    vapidKeys.privateKey
-);
-
-//function to send the notification to the subscribed device
-const sendNotification = (subscription, dataToSend) => {
-  console.log(subscription, dataToSend)
-  webpush.sendNotification(subscription, dataToSend);
-};
-
-//route to test send notification
-app.get("/api/send-notification", (req, res) => {
-  const subscription = dummyDb.subscription; //get subscription from your databse here.
-  const resId = req.query.id;
-  if(resId > data.length - 1){
-    res.json({ message: "id输入0-7" });
-  }else{
-    const message = JSON.stringify(data[resId]);
-    sendNotification(subscription, message);
-    res.json({ message: "message sent" });
-  }
-});
-
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-// https.createServer(options,app).listen(port,'127.0.0.1');
-
-
-const data = [
-  {
-    "body": "n5",
-    "icon": "https://betfrom.com/img/logos/Favicon.png",
-    "msg-url": "https://betfrom.com/en",
-    "title": "n5"
-  },
-  {
-    "body": "hi",
-    "icon": "hi",
-    "msg-url": "hi",
-    "title": "hi"
-  },
-  {
-    "body": "1111",
-    "icon": "1111",
-    "msg-url": "1111",
-    "title": "1111"
-  },
-  {
-    "body": "bodyxxxx",
-    "icon": "http://xxxxxxxxxxxxxxxxx",
-    "msg-url": "http://xxxxxxxxxxxxxxxxx",
-    "title": "title1111"
-  },
-  {
-    "body": "aaa",
-    "icon": "aaa",
-    "msg-url": "aaa",
-    "title": "aaa"
-  },
-  {
-    "body": "content",
-    "icon": "yyy",
-    "msg-url": "yyyy",
-    "title": "content-title"
-  },
-  {
-    "body": "head",
-    "icon": "xxxxzzzz",
-    "msg-url": "https://omnirect.com/pt-br/dos-sofas-as-nuvens/",
-    "title": "head-title"
-  },
-  {
-    "body": "body",
-    "icon": "https://betfrom.com/img/logos/Favicon.png",
-    "msg-url": "https://omnirect.com/pt-br/melhore-a-sua-experiencia-desportiva/",
-    "title": "body-title"
-  }
-]
+  return outputArray;
+}
