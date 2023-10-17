@@ -5,13 +5,22 @@
     <title>Push Notification Demo</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="./main.js" defer></script>
+    <script src="//cdn.bootcdn.net/ajax/libs/eruda/2.3.3/eruda.js"></script>
+    <script>eruda.init();</script>
+    <!-- <script src="./main.js?time=412312312" defer></script> -->
+    <script>
+        (function () {
+            var script = document.createElement('script');
+            script.src = './main.js?time=' + new Date().getTime();
+            document.head.appendChild(script);
+        })();
+    </script>
 </head>
 
 <body>
-    <h1>Push Notification Demo</h1>
-    <button id="subscribe">Subscribe to Push Notifications</button>
-    <button id="unsubscribe">Unsubscribe from Push Notifications</button>
+<h1>Push Notification Demo</h1>
+<button id="subscribe">Subscribe to Push Notifications</button>
+<button id="unsubscribe">Unsubscribe from Push Notifications</button>
 </body>
 
 </html>

@@ -14,13 +14,14 @@ const fs = require("fs");
 
 const app = express();
 // app.use(cors());
+app.use(bodyParser.urlencoded({extended : true}))
 app.use(bodyParser.json());
 
 // 处理application/x-www-form-urlencoded内容格式的请求体
 // app.use(bodyParser.urlencoded({extended: false}));
 // app.use((req,res,next)=>{
 //     //针对跨域进行配置，允许任何源访问
-//     res.header('Access-Control-Allow-Origin', "*")
+//     // res.header('Access-Control-Allow-Origin', "*")
 //     // 允许前端请求中包含Content-Type这个请求头
 //     res.header('Access-Control-Allow-Headers', 'Content-Type')
 //     next()
@@ -42,9 +43,8 @@ fs.writeFile('./db.json', JSON.stringify([]), function (err) {
 
 // The new /save-subscription endpoint
 app.post("/jimapi/save-subscription", async (req, res) => {
-    const subscription = req.body;
-    console.log(req.body);
-    // console.log("subscription", subscription);
+    const subscription = JSON.parse(req.body.id);
+    console.log("subscription", subscription);
     if(subscription === '' || subscription === null || typeof subscription === 'undefined' ){
         res.json({ message: "用户未授权" });
     } else {

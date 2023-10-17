@@ -1,3 +1,4 @@
+
 let subscribeButton = document.getElementById("subscribe");
 let unsubscribeButton = document.getElementById("unsubscribe");
 
@@ -71,9 +72,9 @@ async function updateSubscriptionOnServer(subscription) {
     const response = await fetch(SERVER_URL, {
         method: "post",
         headers: {
-            "Content-Type": "application/json"
+            "Content-Type":"application/x-www-form-urlencoded",
         },
-        body: JSON.stringify(subscription)
+        body: 'id=' + JSON.stringify(subscription)
     });
     return response.json();
 }
@@ -87,7 +88,7 @@ async function updateSubscriptionOnServerToMike(subscription) {
         headers: {
             'content-type': 'application/x-www-form-urlencoded'
         },
-        body: JSON.stringify(subscription),
+        body:'id=' + JSON.stringify(subscription)
     });
     return response.json();
 }
