@@ -3,6 +3,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const webpush = require("web-push");
 const fs = require("fs");
+const schedule = require('node-schedule');
 
 // const https = require('https');
 // const fs = require('fs');
@@ -122,6 +123,35 @@ app.get("/jimapi/send-notification", (req, res) => {
             res.json({ message: "message sent" });
         });
     }
+});
+
+
+// 定义规则
+let rule = new schedule.RecurrenceRule();
+rule.second = [0, 10, 20, 30, 40, 50]; // 每隔 10 秒执行一次
+ 
+// 启动任务
+let job = schedule.scheduleJob(rule, () => {
+ console.log(new Date());
+ const resId = Math.round(Math.random()*(data.length-1)); 
+    console.log(resId)
+    const message = JSON.stringify(data[resId]);
+    fs.readFile('./db.json', function (err, data) {
+        let json = JSON.parse(data);
+
+        json.map((item) => {
+            webpush.sendNotification(item, message).then(res => {
+                console.log('发送成功')
+            }).catch(err => {
+                console.log('当前错误')
+                let existedSub = json.find((el) => el?.endpoint === item.endpoint);
+                json.splice(existedSub,1)
+                fs.writeFile('./db.json', JSON.stringify(json), function (err) {
+                });
+            });
+        });
+    });
+   
 });
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
