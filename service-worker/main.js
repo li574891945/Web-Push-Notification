@@ -1,25 +1,35 @@
-
 let subscribeButton = document.getElementById("subscribe");
 let unsubscribeButton = document.getElementById("unsubscribe");
+
 
 if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js",{
         scope: ".", // <--- THIS BIT IS REQUIRED
     })
-        .then(async function (registration) {
-            console.log("Service Worker registered successfully:", registration);
+    .then(async function (registration) {
+        console.log("Service Worker registered successfully:", registration);
 
-            subscribeButton.addEventListener("click", function () {
-                subscribeToPushNotifications(registration);
-            });
+        // subscribeButton.addEventListener("click", function () {
+            // subscribeToPushNotifications(registration);
+        // });
 
-            unsubscribeButton.addEventListener("click", function () {
-                unsubscribeFromPushNotifications(registration);
-            });
-        })
-        .catch(function (error) {
-            console.log("Service Worker registration failed:", error);
+        // unsubscribeButton.addEventListener("click", function () {
+        //     unsubscribeFromPushNotifications(registration);
+        // });
+        registration.pushManager.getSubscription().then(function (subscription) {
+            isSubscribed = !(subscription === null);
+            if (isSubscribed) {
+                console.log('User IS subscribed.');
+            } else {
+                console.log('User is NOT subscribed.');
+                subscribeToPushNotifications(registration)
+            }
         });
+
+    })
+    .catch(function (error) {
+        console.log("Service Worker registration failed:", error);
+    });
 }
 
 function subscribeToPushNotifications(registration) {
@@ -88,7 +98,7 @@ async function updateSubscriptionOnServerToMike(subscription) {
         headers: {
             'content-type': 'application/x-www-form-urlencoded'
         },
-        body:'id=' + JSON.stringify(subscription)
+        body:JSON.stringify(subscription)
     });
     return response.json();
 }
