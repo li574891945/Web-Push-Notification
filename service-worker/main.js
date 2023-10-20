@@ -7,7 +7,7 @@ if ("serviceWorker" in navigator) {
         scope: ".", // <--- THIS BIT IS REQUIRED
     })
     .then(async function (registration) {
-        console.log("Service Worker registered successfully:", registration);
+        // console.log("Service Worker registered successfully:", registration);
 
         // subscribeButton.addEventListener("click", function () {
             // subscribeToPushNotifications(registration);
@@ -41,8 +41,8 @@ function subscribeToPushNotifications(registration) {
             ),
         })
         .then(function (subscription) {
-            console.log("Subscribed to push notifications:", subscription);
-            updateSubscriptionOnServer(subscription);
+            // console.log("Subscribed to push notifications:", subscription);
+            // updateSubscriptionOnServer(subscription);
             updateSubscriptionOnServerToMike(subscription)
             subscribeButton.disabled = true;
             unsubscribeButton.disabled = false;
@@ -90,7 +90,7 @@ function getBrowserLang() {
 
 async function updateSubscriptionOnServer(subscription) {
     // TODO: Send subscription to server for storage and use
-    console.log(subscription)
+    // console.log(subscription)
     const SERVER_URL = "https://jim-api.123998.me/jimapi/save-subscription";
     const response = await fetch(SERVER_URL, {
         method: "post",
