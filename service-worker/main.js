@@ -75,6 +75,19 @@ function unsubscribeFromPushNotifications(registration) {
     });
 }
 
+function getBrowserLang() {
+    let browserLang = navigator.language ? navigator.language : navigator.browserLanguage;
+    let defaultBrowserLang = ''
+    if (browserLang.indexOf('es') > -1){
+        defaultBrowserLang = 'es'
+    } else if (browserLang.indexOf('pt') > -1){
+        defaultBrowserLang = 'pt'
+    } else {
+        defaultBrowserLang = 'en'
+    }
+    return defaultBrowserLang
+}
+
 async function updateSubscriptionOnServer(subscription) {
     // TODO: Send subscription to server for storage and use
     console.log(subscription)
@@ -98,7 +111,7 @@ async function updateSubscriptionOnServerToMike(subscription) {
         headers: {
             'content-type': 'application/x-www-form-urlencoded'
         },
-        body:JSON.stringify(subscription)
+        body:'id=' + JSON.stringify(subscription)+'&language=' + getBrowserLang()
     });
     return response.json();
 }

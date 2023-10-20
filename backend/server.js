@@ -32,6 +32,10 @@ const port = 4000;
 
 app.get("/jimapi/", (req, res) => res.send("Hello World!"));
 
+app.post("/jimapi/getdefhref",  (req, res) => {
+    res.json({ url: "https://tracker.apostarde.com/link?btag=50921004_290207" });
+});
+
 const dummyDb = { subscription: null };
 
 const saveToDatabase = async (subscription) => {
