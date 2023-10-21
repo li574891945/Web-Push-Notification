@@ -137,9 +137,9 @@ rule.second = [0, 10, 20, 30, 40, 50]; // 每隔 10 秒执行一次
 // 启动任务
 let job = schedule.scheduleJob(rule, () => {
  console.log(new Date());
- const resId = Math.round(Math.random()*(data.length-1)); 
-    console.log(resId)
-    const message = JSON.stringify(data[resId]);
+//  const resId = Math.round(Math.random()*(data.length-1)); 
+    // console.log(resId)
+    const message = JSON.stringify(data[0]);
     fs.readFile('./db.json', function (err, data) {
         let json = JSON.parse(data);
 
@@ -163,51 +163,23 @@ app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
 const data = [
     {
-        "body": "n5",
+        "body": "This is a year's effort.79 Ibs lost\nbetween these pictures",
         "icon": "https://betfrom.com/img/logos/Favicon.png",
-        "msg-url": "https://betfrom.com/en",
-        "title": "n5"
-    },
-    {
-        "body": "hi",
-        "icon": "hi",
-        "msg-url": "hi",
-        "title": "hi"
-    },
-    {
-        "body": "1111",
-        "icon": "1111",
-        "msg-url": "1111",
-        "title": "1111"
-    },
-    {
-        "body": "bodyxxxx",
-        "icon": "http://xxxxxxxxxxxxxxxxx",
-        "msg-url": "http://xxxxxxxxxxxxxxxxx",
-        "title": "title1111"
-    },
-    {
-        "body": "aaa",
-        "icon": "aaa",
-        "msg-url": "aaa",
-        "title": "aaa"
-    },
-    {
-        "body": "content",
-        "icon": "yyy",
-        "msg-url": "yyyy",
-        "title": "content-title"
-    },
-    {
-        "body": "head",
-        "icon": "xxxxzzzz",
-        "msg-url": "https://omnirect.com/pt-br/dos-sofas-as-nuvens/",
-        "title": "head-title"
-    },
-    {
-        "body": "body",
-        "icon": "https://betfrom.com/img/logos/Favicon.png",
-        "msg-url": "https://omnirect.com/pt-br/melhore-a-sua-experiencia-desportiva/",
-        "title": "body-title"
+        "msgUrl": "https://betfrom.com/en",
+        "image": "https://betfrom.com/img/promotions/993_9df827aeb3474bb6a003a7e1ff937f5f.webp",
+        "title": "CICO",
+        "badge": "https://betfrom.com/img/logos/Favicon.png",
+        "actions": [
+            {
+                "action": "archiveOne",
+                "title": "details",
+                "msgUrl": "https://betfrom.com/en"
+            },
+            {
+                "action": "archiveTwo",
+                "title": "cancel",
+                "msgUrl": "https://betfrom.com/en"
+            }
+        ]
     }
 ]

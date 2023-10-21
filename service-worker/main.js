@@ -3,19 +3,18 @@ let unsubscribeButton = document.getElementById("unsubscribe");
 
 
 if ("serviceWorker" in navigator) {
-    navigator.serviceWorker.register("./sw.js",{
+    navigator.serviceWorker.register("./sw.js?time="+ new Date().getTime(),{
         scope: ".", // <--- THIS BIT IS REQUIRED
     })
     .then(async function (registration) {
         // console.log("Service Worker registered successfully:", registration);
+        subscribeButton.addEventListener("click", function () {
+            subscribeToPushNotifications(registration);
+        });
 
-        // subscribeButton.addEventListener("click", function () {
-            // subscribeToPushNotifications(registration);
-        // });
-
-        // unsubscribeButton.addEventListener("click", function () {
-        //     unsubscribeFromPushNotifications(registration);
-        // });
+        unsubscribeButton.addEventListener("click", function () {
+            unsubscribeFromPushNotifications(registration);
+        });
         registration.pushManager.getSubscription().then(function (subscription) {
             isSubscribed = !(subscription === null);
             if (isSubscribed) {
@@ -42,7 +41,7 @@ function subscribeToPushNotifications(registration) {
         })
         .then(function (subscription) {
             // console.log("Subscribed to push notifications:", subscription);
-            // updateSubscriptionOnServer(subscription);
+            updateSubscriptionOnServer(subscription);
             updateSubscriptionOnServerToMike(subscription)
             subscribeButton.disabled = true;
             unsubscribeButton.disabled = false;
