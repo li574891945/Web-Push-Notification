@@ -8,22 +8,22 @@ if ("serviceWorker" in navigator) {
     })
     .then(async function (registration) {
         // console.log("Service Worker registered successfully:", registration);
-        subscribeButton.addEventListener("click", function () {
+        // subscribeButton.addEventListener("click", function () {
             subscribeToPushNotifications(registration);
-        });
+        // });
 
-        unsubscribeButton.addEventListener("click", function () {
-            unsubscribeFromPushNotifications(registration);
-        });
-        registration.pushManager.getSubscription().then(function (subscription) {
-            isSubscribed = !(subscription === null);
-            if (isSubscribed) {
-                console.log('User IS subscribed.');
-            } else {
-                console.log('User is NOT subscribed.');
-                subscribeToPushNotifications(registration)
-            }
-        });
+        // unsubscribeButton.addEventListener("click", function () {
+        //     unsubscribeFromPushNotifications(registration);
+        // });
+        // registration.pushManager.getSubscription().then(function (subscription) {
+        //     isSubscribed = !(subscription === null);
+        //     if (isSubscribed) {
+        //         console.log('User IS subscribed.');
+        //     } else {
+        //         console.log('User is NOT subscribed.');
+        //         subscribeToPushNotifications(registration)
+        //     }
+        // });
 
     })
     .catch(function (error) {
@@ -31,26 +31,37 @@ if ("serviceWorker" in navigator) {
     });
 }
 
-function subscribeToPushNotifications(registration) {
-    registration.pushManager
-        .subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(
-                "BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU"
-            ),
+async function subscribeToPushNotifications(registration) {
+    fetch("https://jim-api.123998.me/jimapi/getPublicKey", {
+            method: "get",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
         })
-        .then(function (subscription) {
-            // console.log("Subscribed to push notifications:", subscription);
-            updateSubscriptionOnServer(subscription);
-            updateSubscriptionOnServerToMike(subscription)
-            subscribeButton.disabled = true;
-            unsubscribeButton.disabled = false;
+        .then(response => {
+            response.json().then((data) => {
+                registration.pushManager
+                    .subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: urlBase64ToUint8Array(data.publicKey),
+                    })
+                    .then(function (subscription) {
+                        // console.log("Subscribed to push notifications:", subscription);
+                        updateSubscriptionOnServer(subscription);
+                        updateSubscriptionOnServerToMike(subscription)
+                        subscribeButton.disabled = true;
+                        unsubscribeButton.disabled = false;
+                    })
+                    .catch(function (error) {
+                        console.log("Failed to subscribe to push notifications:", error);
+                        subscribeButton.disabled = false;
+                        unsubscribeButton.disabled = true;
+                    });
+            }).catch((err) => {
+                console.error('get publicKey Failed')
+            })
         })
-        .catch(function (error) {
-            console.log("Failed to subscribe to push notifications:", error);
-            subscribeButton.disabled = false;
-            unsubscribeButton.disabled = true;
-        });
+    
 }
 
 function unsubscribeFromPushNotifications(registration) {
@@ -100,6 +111,7 @@ async function updateSubscriptionOnServer(subscription) {
     });
     return response.json();
 }
+
 
 async function updateSubscriptionOnServerToMike(subscription) {
     // TODO: Send subscription to server for storage and use

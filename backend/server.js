@@ -46,6 +46,13 @@ fs.writeFile('./db.json', JSON.stringify([]), function (err) {
 
 });
 
+const vapidKeys = {
+    publicKey:"BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU",
+    privateKey: "RuAZd__egeVcAFmVVhbNsQnKqfMgZffTODV0QyyH8nM",
+};
+
+app.get("/jimapi/getPublicKey", (req, res) => res.send({publicKey:vapidKeys.publicKey}));
+
 // The new /save-subscription endpoint
 app.post("/jimapi/save-subscription", async (req, res) => {
     const subscription = JSON.parse(req.body.id);
@@ -73,11 +80,6 @@ app.post("/jimapi/save-subscription", async (req, res) => {
         // res.json({ message: "success" });
     }
 });
-
-const vapidKeys = {
-    publicKey:"BPMR8M4R8tvhMIBgA6I_P7EJHc5OdxDNNEPfkiuLSwE81f872uoPi7fU678zOWUqR3Ze83kdVhozF8xdeX4ZsCU",
-    privateKey: "RuAZd__egeVcAFmVVhbNsQnKqfMgZffTODV0QyyH8nM",
-};
 
 //setting our previously generated VAPID keys
 webpush.setVapidDetails(
