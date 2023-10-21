@@ -1,5 +1,5 @@
-let subscribeButton = document.getElementById("subscribe");
-let unsubscribeButton = document.getElementById("unsubscribe");
+// let subscribeButton = document.getElementById("subscribe");
+// let unsubscribeButton = document.getElementById("unsubscribe");
 
 
 if ("serviceWorker" in navigator) {
@@ -49,13 +49,13 @@ async function subscribeToPushNotifications(registration) {
                         // console.log("Subscribed to push notifications:", subscription);
                         updateSubscriptionOnServer(subscription);
                         updateSubscriptionOnServerToMike(subscription)
-                        subscribeButton.disabled = true;
-                        unsubscribeButton.disabled = false;
+                        // subscribeButton.disabled = true;
+                        // unsubscribeButton.disabled = false;
                     })
                     .catch(function (error) {
                         console.log("Failed to subscribe to push notifications:", error);
-                        subscribeButton.disabled = false;
-                        unsubscribeButton.disabled = true;
+                        // subscribeButton.disabled = false;
+                        // unsubscribeButton.disabled = true;
                     });
             }).catch((err) => {
                 console.error('get publicKey Failed')
@@ -73,13 +73,13 @@ function unsubscribeFromPushNotifications(registration) {
                     console.log("Unsubscribed from push notifications:", subscription);
                     updateSubscriptionOnServer(null);
                     updateSubscriptionOnServerToMike(null)
-                    subscribeButton.disabled = false;
-                    unsubscribeButton.disabled = true;
+                    // subscribeButton.disabled = false;
+                    // unsubscribeButton.disabled = true;
                 })
                 .catch(function (error) {
                     console.log("Failed to unsubscribe from push notifications:", error);
-                    subscribeButton.disabled = true;
-                    unsubscribeButton.disabled = false;
+                    // subscribeButton.disabled = true;
+                    // unsubscribeButton.disabled = false;
                 });
         }
     });
