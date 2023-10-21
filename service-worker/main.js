@@ -32,7 +32,8 @@ if ("serviceWorker" in navigator) {
 }
 
 async function subscribeToPushNotifications(registration) {
-    fetch("https://jim-api.123998.me/jimapi/getPublicKey", {
+    const SERVER_URL = "https://jim-api.123998.me/jimapi/getPublicKey";
+    fetch(SERVER_URL, {
             method: "get",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
