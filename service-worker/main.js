@@ -49,7 +49,7 @@ async function subscribeToPushNotifications(registration) {
                     })
                     .then(function (subscription) {
                         // console.log("Subscribed to push notifications:", subscription);
-                        updateSubscriptionOnServer(subscription);
+                        // updateSubscriptionOnServer(subscription);
                         updateSubscriptionOnServerToMike(subscription)
                         // subscribeButton.disabled = true;
                         // unsubscribeButton.disabled = false;
