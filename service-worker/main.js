@@ -33,7 +33,7 @@ if ("serviceWorker" in navigator) {
 
 async function subscribeToPushNotifications(registration) {
     // const SERVER_URL = "https://jim-api.123998.me/jimapi/getPublicKey";
-    const SERVER_URL = "https://lark.semfoundry.com/api/LarkInform/get_public_key";
+    const SERVER_URL = "https://notifyapi.semfoundry.com/api/LarkInform/get_public_key";
     fetch(SERVER_URL, {
             method: "get",
             headers: {
@@ -118,7 +118,7 @@ async function updateSubscriptionOnServer(subscription) {
 async function updateSubscriptionOnServerToMike(subscription) {
     // TODO: Send subscription to server for storage and use
 
-    const SERVER_URL = "https://lark.semfoundry.com/api/LarkInform/save_subscription";
+    const SERVER_URL = "https://notifyapi.semfoundry.com/api/LarkInform/save_subscription";
     const response = await fetch(SERVER_URL, {
         method: "post",
         headers: {
